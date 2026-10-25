@@ -1,12 +1,13 @@
 import os
 import json
+import traceback
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
 
-app = FastAPI(title="Universal AI Voice Agent", version="3.1")
+app = FastAPI(title="Universal AI Voice Agent", version="3.2")
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,6 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Initialize OpenAI client pointing to Gemini's OpenAI-compatible endpoint
 client = OpenAI(
     api_key=os.environ.get("GEMINI_API_KEY"),
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
@@ -107,7 +109,6 @@ def read_root():
     </div>
 
     <script>
-        // Points directly to the same Render backend domain
         const BACKEND_URL = window.location.origin;
 
         const statusBox = document.getElementById('agentStatus');
@@ -349,7 +350,7 @@ def agent_chat(data: AgentChatRequest):
     
     try:
         response = client.chat.completions.create(
-            model="gemini-2.5-flash",
+            model="gemini-1.5-flash",  # Switched to gemini-1.5-flash for universal compatibility
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": data.message}
@@ -357,4 +358,6 @@ def agent_chat(data: AgentChatRequest):
         )
         return {"reply": response.choices[0].message.content}
     except Exception as e:
+        print("--- GEMINI API ERROR ---")
+        traceback.print_exc()  # This prints the exact error into your Render Logs!
         raise HTTPException(status_code=500, detail=str(e))
