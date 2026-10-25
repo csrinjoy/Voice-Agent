@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
 
-app = FastAPI(title="Universal AI Voice Agent", version="3.5")
+app = FastAPI(title="Universal AI Voice Agent", version="3.6")
 
 app.add_middleware(
     CORSMiddleware,
@@ -55,7 +55,7 @@ def read_root():
     <div class="max-w-lg w-full bg-slate-800 border border-slate-700 rounded-3xl p-6 shadow-2xl space-y-5">
         <div class="text-center">
             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium mb-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Fast Voice Agent Live
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Voice Agent Live
             </span>
             <h1 class="text-2xl font-black text-yellow-400">Interactive Voice Assistant</h1>
             <p class="text-xs text-slate-400 mt-1">Upload a PDF/Word resume or paste text, then tap the orb to talk!</p>
@@ -330,7 +330,7 @@ def agent_chat(data: AgentChatRequest):
     
     try:
         response = client.chat.completions.create(
-            model="gemini-2.5-flash",  # Using the fully compatible, fast model
+            model="gemini-3.8-flash",  # Correct current Gemini model identifier
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": data.message}
