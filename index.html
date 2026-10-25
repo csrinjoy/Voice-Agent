@@ -77,8 +77,8 @@
     </div>
 
     <script>
-        // REPLACE WITH YOUR LIVE RENDER BACKEND URL
-        const BACKEND_URL = "https://srinjoy-ai-backend.onrender.com";
+        // Configured to your Render app URL
+        const BACKEND_URL = "https://voice-agent.onrender.com";
 
         const statusBox = document.getElementById('agentStatus');
         const voiceOrb = document.getElementById('voiceOrb');
@@ -91,6 +91,8 @@
             const savedResume = localStorage.getItem('universal_agent_context');
             if (savedResume) {
                 resumeInput.value = savedResume;
+            } else {
+                resumeInput.value = "Jane Doe: Software Engineer with 5 years of experience in Python, FastAPI, and React. Passionate about building AI tools.";
             }
         });
 
@@ -100,7 +102,6 @@
             alert("Agent knowledge base updated successfully!");
         }
 
-        // Handle PDF and Word File Uploads
         async function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -289,7 +290,7 @@
                 voiceOrb.classList.remove('orb-active');
                 orbRipple.classList.add('hidden');
                 orbIcon.className = "fa-solid fa-microphone text-yellow-400 text-2xl";
-                statusBox.innerHTML = `<span class="text-yellow-400 font-bold">Ready</span><span class="text-slate-300 mt-1">${message}</span>`;
+                statusBox.innerHTML = `<span class="text-yellow-400 font-bold">Ready</span><span class="text-slate-300 mt-1">Upload a resume and tap the orb to start.</span>`;
             }
         }
 
