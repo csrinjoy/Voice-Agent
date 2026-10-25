@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
 
-app = FastAPI(title="Universal AI Voice Agent", version="3.3")
+app = FastAPI(title="Universal AI Voice Agent", version="3.4")
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,7 +17,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize OpenAI client pointing to Google's Gemini OpenAI-compatible endpoint
 client = OpenAI(
     api_key=os.environ.get("GEMINI_API_KEY"),
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
@@ -36,12 +35,9 @@ def read_root():
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Universal AI Voice Agent</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Mammoth.js for Word (.docx) parsing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-    <!-- PDF.js for PDF parsing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -57,17 +53,14 @@ def read_root():
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
 
     <div class="max-w-lg w-full bg-slate-800 border border-slate-700 rounded-3xl p-6 shadow-2xl space-y-5">
-        
-        <!-- Header -->
         <div class="text-center">
             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium mb-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Universal AI Voice Agent Live
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Ultra-Fast Voice Agent Live
             </span>
             <h1 class="text-2xl font-black text-yellow-400">Interactive Voice Assistant</h1>
             <p class="text-xs text-slate-400 mt-1">Upload a PDF/Word resume or paste text, then tap the orb to talk!</p>
         </div>
 
-        <!-- File Upload Section -->
         <div class="bg-slate-900 border border-slate-700 rounded-2xl p-4 space-y-3">
             <div class="flex items-center justify-between">
                 <label class="text-xs font-bold text-yellow-400">
@@ -86,7 +79,6 @@ def read_root():
             </button>
         </div>
 
-        <!-- Glowing Voice Orb UI -->
         <div class="relative flex items-center justify-center py-1">
             <div id="voiceOrb" onclick="handleOrbClick()" class="w-24 h-24 bg-slate-900 border-2 border-yellow-500 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 shadow-2xl">
                 <i id="orbIcon" class="fa-solid fa-microphone text-yellow-400 text-2xl"></i>
@@ -94,13 +86,11 @@ def read_root():
             <div id="orbRipple" class="absolute w-32 h-32 rounded-full border border-yellow-500/30 pointer-events-none hidden animate-ping"></div>
         </div>
 
-        <!-- Dynamic Status Display -->
         <div id="agentStatus" class="bg-slate-900/80 border border-slate-700 rounded-2xl p-3 text-xs text-slate-300 min-h-[70px] flex flex-col items-center justify-center space-y-1 text-center">
             <span class="text-yellow-400 font-bold">Ready</span>
             <span class="text-slate-300">Upload a resume and tap the orb to start.</span>
         </div>
 
-        <!-- Control Button -->
         <div>
             <button onclick="toggleAgent()" id="actionBtn" class="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold py-3 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
                 <i class="fa-solid fa-play"></i> Start Agent
@@ -123,7 +113,7 @@ def read_root():
             if (savedResume) {
                 resumeInput.value = savedResume;
             } else {
-                resumeInput.value = "Jane Doe: Software Engineer with 5 years of experience in Python, FastAPI, and React. Passionate about building AI tools.";
+                resumeInput.value = "Jane Doe: Software Engineer with 5 years of experience in Python, FastAPI, and React.";
             }
         });
 
@@ -166,7 +156,7 @@ def read_root():
                 }
             } catch (err) {
                 console.error(err);
-                alert("Error parsing file. Please copy and paste text manually.");
+                alert("Error parsing file.");
             }
         }
 
@@ -194,7 +184,7 @@ def read_root():
             recognition.lang = 'en-US';
 
             recognition.onstart = () => {
-                if (isRunning) setUIState('listening', 'Listening... Speak your question now.');
+                if (isRunning) setUIState('listening', 'Listening...');
             };
 
             recognition.onresult = (event) => {
@@ -214,8 +204,6 @@ def read_root():
                     setUIState('idle', 'Tap the orb to speak.');
                 }
             };
-        } else {
-            alert("Speech recognition requires Chrome, Edge, or Safari.");
         }
 
         function toggleAgent() {
@@ -243,11 +231,9 @@ def read_root():
         }
 
         function playGreeting() {
-            const greeting = "Hello, I am your AI voice assistant. Ask me anything about the uploaded resume or background.";
+            const greeting = "Hello, I am ready. Ask me anything.";
             setUIState('speaking', greeting);
-            speakAsAgent(greeting, () => {
-                startListeningSafely();
-            });
+            speakAsAgent(greeting, () => { startListeningSafely(); });
         }
 
         function startListeningSafely() {
@@ -266,10 +252,7 @@ def read_root():
                 const response = await fetch(`${BACKEND_URL}/api/agent-chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        message: query,
-                        resume_context: currentResumeContext 
-                    })
+                    body: JSON.stringify({ message: query, resume_context: currentResumeContext })
                 });
 
                 if (!response.ok) throw new Error(`Server error: ${response.status}`);
@@ -278,13 +261,11 @@ def read_root():
                 const reply = data.reply || "I couldn't generate a proper response.";
 
                 setUIState('speaking', reply);
-                speakAsAgent(reply, () => {
-                    startListeningSafely();
-                });
+                speakAsAgent(reply, () => { startListeningSafely(); });
 
             } catch (err) {
                 console.error(err);
-                const errorReply = "Sorry, I ran into a connection issue with the secure server.";
+                const errorReply = "Sorry, connection issue.";
                 setUIState('speaking', errorReply);
                 speakAsAgent(errorReply, () => { stopAgent(); });
             }
@@ -306,22 +287,22 @@ def read_root():
                 voiceOrb.classList.add('orb-active');
                 orbRipple.classList.remove('hidden');
                 orbIcon.className = "fa-solid fa-microphone-lines text-yellow-400 text-2xl animate-pulse";
-                statusBox.innerHTML = `<span class="text-emerald-400 font-bold animate-pulse">Agent is listening...</span><span class="text-slate-300 mt-1">${message}</span>`;
+                statusBox.innerHTML = `<span class="text-emerald-400 font-bold animate-pulse">Listening...</span><span class="text-slate-300 mt-1">${message}</span>`;
             } else if (state === 'speaking') {
                 voiceOrb.classList.add('orb-active');
                 orbRipple.classList.remove('hidden');
                 orbIcon.className = "fa-solid fa-volume-high text-yellow-400 text-2xl animate-bounce";
-                statusBox.innerHTML = `<span class="text-yellow-400 font-bold">Agent Speaking:</span><span class="text-slate-300 mt-1">${message}</span>`;
+                statusBox.innerHTML = `<span class="text-yellow-400 font-bold">Speaking:</span><span class="text-slate-300 mt-1">${message}</span>`;
             } else if (state === 'thinking') {
                 voiceOrb.classList.remove('orb-active');
                 orbRipple.classList.add('hidden');
                 orbIcon.className = "fa-solid fa-brain text-yellow-400 text-2xl animate-spin";
-                statusBox.innerHTML = `<span class="text-blue-400 font-bold">Agent processing...</span><span class="text-slate-300 mt-1">${message}</span>`;
+                statusBox.innerHTML = `<span class="text-blue-400 font-bold">Processing...</span><span class="text-slate-300 mt-1">${message}</span>`;
             } else {
                 voiceOrb.classList.remove('orb-active');
                 orbRipple.classList.add('hidden');
                 orbIcon.className = "fa-solid fa-microphone text-yellow-400 text-2xl";
-                statusBox.innerHTML = `<span class="text-yellow-400 font-bold">Ready</span><span class="text-slate-300 mt-1">Upload a resume and tap the orb to start.</span>`;
+                statusBox.innerHTML = `<span class="text-yellow-400 font-bold">Ready</span><span class="text-slate-300 mt-1">Tap the orb to start.</span>`;
             }
         }
 
@@ -330,7 +311,7 @@ def read_root():
             window.speechSynthesis.cancel();
             if (recognition) { try { recognition.stop(); } catch(e){} }
             actionBtn.innerHTML = `<i class="fa-solid fa-play"></i> Start Agent`;
-            setUIState('idle', 'Upload a resume and tap the orb to start.');
+            setUIState('idle', 'Ready.');
         }
     </script>
 </body>
@@ -339,18 +320,18 @@ def read_root():
 
 @app.post("/api/agent-chat")
 def agent_chat(data: AgentChatRequest):
-    context = data.resume_context.strip() if data.resume_context.strip() else "No specific background provided. Be a helpful general assistant."
+    context = data.resume_context.strip() if data.resume_context.strip() else "No specific background provided."
     
     system_prompt = (
-        "You are a professional AI voice assistant representing the individual described in the resume or profile data below. "
-        "Read their profile, identify their name, career history, skills, and background. "
-        "Answer questions naturally, professionally, and concisely on their behalf as if speaking out loud in a voice conversation (keep responses under 3 sentences where possible).\n\n"
+        "You are a professional AI voice assistant representing the individual described in the profile below. "
+        "Answer questions naturally, professionally, and extremely concisely (strictly under 2 sentences) as if speaking out loud.\n\n"
         f"--- PROFILE / RESUME DATA ---\n{context}\n-----------------------------"
     )
     
     try:
         response = client.chat.completions.create(
-            model="gemini-3.8-flash",  # Updated to the correct active model ID
+            model="gemini-3.8-flash",
+            reasoning_effort="low",  # <--- THIS ELIMINATES THE THINKING DELAY AND MAKES IT INSTANT
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": data.message}
