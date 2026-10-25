@@ -21,19 +21,6 @@ client = OpenAI(
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
 )
 
-class AIAuditRequest(BaseModel):
-    business_name: str
-    industry: str
-    city: str
-
-class SchemaRequest(BaseModel):
-    business_name: str
-    industry: str
-    address: str
-    phone: str
-    website: str
-    city: str
-
 class AgentChatRequest(BaseModel):
     message: str
     resume_context: str = ""
@@ -60,45 +47,6 @@ def read_root():
     </body>
     </html>
     """
-
-@app.post("/api/audit-ai-visibility")
-def audit_ai_visibility(data: AIAuditRequest):
-    prompt = (
-        f"Act as a local consumer search engine. A user asks: 'What are the top 3 best {data.industry} "
-        f"businesses in {data.city}? Give me specific names.'\n\n"
-        f"Analyze your response knowledge base for {data.city} {data.industry}. "
-        f"Is '{data.business_name}' explicitly recommended? Answer strictly in JSON format with keys: "
-        f"'is_mentioned' (boolean), 'competitors_listed' (list of strings), and 'recommendation_summary' (string)."
-    )
-    try:
-        response = client.chat.completions.create(
-            model="gemini-2.5-flash",
-            messages=[{"role": "user", "content": prompt}],
-            response_format={"type": "json_object"}
-        )
-        result = json.loads(response.choices[0].message.content)
-        return {"target_business": data.business_name, "location": data.city, "audit_result": result}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/generate-ai-schema")
-def generate_ai_schema(data: SchemaRequest):
-    schema_markup = {
-        "@context": "https://schema.org",
-        "@type": "LocalBusiness",
-        "name": data.business_name,
-        "description": f"Top-rated {data.industry} serving {data.address}.",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": data.address,
-            "addressLocality": data.city,
-            "addressCountry": "US"
-        },
-        "telephone": data.phone,
-        "url": data.website,
-        "priceRange": "$$"
-    }
-    return {"instructions": "Paste this JSON-LD script inside the <head> tag.", "json_ld": schema_markup}
 
 @app.post("/api/agent-chat")
 def agent_chat(data: AgentChatRequest):
