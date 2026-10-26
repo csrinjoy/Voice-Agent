@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
 
-app = FastAPI(title="Professional AI Voice Agent", version="4.0")
+app = FastAPI(title="Professional AI Voice Agent", version="4.1")
 
 app.add_middleware(
     CORSMiddleware,
@@ -201,7 +201,7 @@ def read_root():
 
             recognition.onresult = (event) => {
                 lastTranscript = event.results[0][0].transcript.toLowerCase().trim();
-                // BARGE-IN: If user speaks while agent is talking or ready, immediately cancel speech
+                // BARGE-IN: If user speaks while agent is talking, immediately cancel speech
                 if (window.speechSynthesis.speaking) {
                     window.speechSynthesis.cancel();
                 }
@@ -234,7 +234,6 @@ def read_root():
             if (!isRunning) {
                 toggleAgent();
             } else {
-                // Instantly interrupt speaking
                 if (window.speechSynthesis.speaking) {
                     window.speechSynthesis.cancel();
                 }
@@ -339,9 +338,6 @@ def read_root():
 def agent_chat(data: AgentChatRequest):
     context = data.resume_context.strip() if data.resume_context.strip() else "Professional background."
     
-    # Extract name for system prompt context if possible
-    first_line = context.split("\n")[0] if context else ""
-    
     system_prompt = (
         "You are a polite, professional, and articulate customer support and career associate representing the individual in the profile below. "
         "Adopt a warm call-center professional tone. "
@@ -351,7 +347,7 @@ def agent_chat(data: AgentChatRequest):
     
     try:
         response = client.chat.completions.create(
-            model="gemini-1.5-flash",  # Ultra-fast production flash model
+            model="gemini-2.0-flash",  # Updated to universally supported and lightning-fast flash model ID
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": data.message}
