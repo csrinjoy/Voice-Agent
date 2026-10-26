@@ -1,13 +1,13 @@
 import os
 import json
 import traceback
+import requests
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from openai import OpenAI
 
-app = FastAPI(title="Professional AI Voice Agent", version="4.1")
+app = FastAPI(title="Professional AI Voice Agent", version="5.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,10 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-client = OpenAI(
-    api_key=os.environ.get("GEMINI_API_KEY"),
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
-)
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 class AgentChatRequest(BaseModel):
     message: str
@@ -338,23 +335,36 @@ def read_root():
 def agent_chat(data: AgentChatRequest):
     context = data.resume_context.strip() if data.resume_context.strip() else "Professional background."
     
-    system_prompt = (
-        "You are a polite, professional, and articulate customer support and career associate representing the individual in the profile below. "
-        "Adopt a warm call-center professional tone. "
-        "Answer questions naturally, professionally, and extremely concisely (strictly 1 short sentence) so speech is instant.\n\n"
-        f"--- PROFILE / RESUME DATA ---\n{context}\n-----------------------------"
+    system_instruction = (
+        "You are a polite, professional call-center career associate representing the individual in the profile below. "
+        "Answer questions naturally, professionally, and extremely concisely in strictly 1 short sentence."
     )
     
+    user_content = f"Profile / Resume Context:\n{context}\n\nUser Question: {data.message}"
+    
+    # Direct REST API call to Google's Gemini endpoint (bypasses SDK blocking)
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+    
+    payload = {
+        "contents": [
+            {"role": "user", "parts": [{"text": f"{system_instruction}\n\n{user_content}"}]}
+        ],
+        "generationConfig": {
+            "temperature": 0.3,
+            "maxOutputTokens": 100
+        }
+    }
+    
     try:
-        response = client.chat.completions.create(
-            model="gemini-2.0-flash",  # Updated to universally supported and lightning-fast flash model ID
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": data.message}
-            ]
-        )
-        return {"reply": response.choices[0].message.content}
+        res = requests.post(url, json=payload, timeout=10)
+        if res.status_code != 200:
+            print(f"API Error Response: {res.text}")
+            raise HTTPException(status_code=500, detail=f"Gemini API Error: {res.status_code}")
+            
+        res_data = res.json()
+        reply_text = res_data["candidates"][0]["content"]["parts"][0]["text"].strip()
+        return {"reply": reply_text}
     except Exception as e:
-        print("--- GEMINI API ERROR ---")
+        print("--- DIRECT API ERROR ---")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
