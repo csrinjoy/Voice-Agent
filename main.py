@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from openai import OpenAI
 
-app = FastAPI(title="Universal AI Voice Agent", version="3.6")
+app = FastAPI(title="Professional AI Voice Agent", version="4.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -34,7 +34,7 @@ def read_root():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal AI Voice Agent</title>
+    <title>Professional AI Voice Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -44,56 +44,57 @@ def read_root():
     </script>
     <style>
         @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(234, 179, 8, 0.4), inset 0 0 15px rgba(234, 179, 8, 0.2); }
-            50% { box-shadow: 0 0 40px rgba(234, 179, 8, 0.8), inset 0 0 25px rgba(234, 179, 8, 0.5); }
+            0%, 100% { box-shadow: 0 0 25px rgba(59, 130, 246, 0.5), inset 0 0 15px rgba(59, 130, 246, 0.3); }
+            50% { box-shadow: 0 0 45px rgba(59, 130, 246, 0.9), inset 0 0 25px rgba(59, 130, 246, 0.6); }
         }
         .orb-active { animation: pulse-glow 2s infinite ease-in-out; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="max-w-lg w-full bg-slate-800 border border-slate-700 rounded-3xl p-6 shadow-2xl space-y-5">
+    <div class="max-w-lg w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-5">
         <div class="text-center">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium mb-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Voice Agent Live
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-medium mb-2">
+                <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span> Professional Voice Associate Live
             </span>
-            <h1 class="text-2xl font-black text-yellow-400">Interactive Voice Assistant</h1>
-            <p class="text-xs text-slate-400 mt-1">Upload a PDF/Word resume or paste text, then tap the orb to talk!</p>
+            <h1 class="text-2xl font-bold text-white">Interactive Voice Associate</h1>
+            <p class="text-xs text-slate-400 mt-1">Upload your resume/profile and tap the orb to start speaking.</p>
         </div>
 
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-4 space-y-3">
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
             <div class="flex items-center justify-between">
-                <label class="text-xs font-bold text-yellow-400">
-                    <i class="fa-solid fa-file-arrow-up mr-1"></i> Upload Resume (PDF or DOCX):
+                <label class="text-xs font-bold text-blue-400">
+                    <i class="fa-solid fa-file-arrow-up mr-1"></i> Upload Profile / Resume:
                 </label>
-                <input type="file" id="resumeFile" accept=".pdf,.docx,.txt" onchange="handleFileUpload(event)" class="text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-yellow-500 file:text-slate-900 hover:file:bg-yellow-400 cursor-pointer">
+                <input type="file" id="resumeFile" accept=".pdf,.docx,.txt" onchange="handleFileUpload(event)" class="text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer">
             </div>
 
             <div>
                 <label class="block text-xs font-medium text-slate-400 mb-1">Or edit resume text directly:</label>
-                <textarea id="resumeInput" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-yellow-500 resize-none" placeholder="Paste resume background or bio here..."></textarea>
+                <textarea id="resumeInput" rows="3" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-blue-500 resize-none" placeholder="Paste background or resume here..."></textarea>
             </div>
             
-            <button onclick="saveResumeContext()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 rounded-xl transition text-xs">
-                Update Agent Knowledge Base
+            <button onclick="saveResumeContext()" class="w-full bg-slate-800 hover:bg-slate-700 text-blue-400 font-medium py-2 rounded-xl transition text-xs border border-slate-700">
+                Update Knowledge Base
             </button>
         </div>
 
-        <div class="relative flex items-center justify-center py-1">
-            <div id="voiceOrb" onclick="handleOrbClick()" class="w-24 h-24 bg-slate-900 border-2 border-yellow-500 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 shadow-2xl">
-                <i id="orbIcon" class="fa-solid fa-microphone text-yellow-400 text-2xl"></i>
+        <!-- Glowing Voice Orb UI -->
+        <div class="relative flex items-center justify-center py-2">
+            <div id="voiceOrb" onclick="handleOrbClick()" class="w-28 h-28 bg-slate-900 border-2 border-blue-500 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 shadow-2xl">
+                <i id="orbIcon" class="fa-solid fa-microphone text-blue-400 text-3xl"></i>
             </div>
-            <div id="orbRipple" class="absolute w-32 h-32 rounded-full border border-yellow-500/30 pointer-events-none hidden animate-ping"></div>
+            <div id="orbRipple" class="absolute w-36 h-36 rounded-full border border-blue-500/30 pointer-events-none hidden animate-ping"></div>
         </div>
 
-        <div id="agentStatus" class="bg-slate-900/80 border border-slate-700 rounded-2xl p-3 text-xs text-slate-300 min-h-[70px] flex flex-col items-center justify-center space-y-1 text-center">
-            <span class="text-yellow-400 font-bold">Ready</span>
-            <span class="text-slate-300">Upload a resume and tap the orb to start.</span>
+        <div id="agentStatus" class="bg-slate-950 border border-slate-800 rounded-2xl p-3 text-xs text-slate-300 min-h-[70px] flex flex-col items-center justify-center space-y-1 text-center">
+            <span class="text-blue-400 font-bold">Ready</span>
+            <span class="text-slate-400">Tap the orb to start the conversation.</span>
         </div>
 
         <div>
-            <button onclick="toggleAgent()" id="actionBtn" class="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold py-3 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
-                <i class="fa-solid fa-play"></i> Start Agent
+            <button onclick="toggleAgent()" id="actionBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
+                <i class="fa-solid fa-play"></i> Start Associate
             </button>
         </div>
     </div>
@@ -113,14 +114,25 @@ def read_root():
             if (savedResume) {
                 resumeInput.value = savedResume;
             } else {
-                resumeInput.value = "Jane Doe: Software Engineer with 5 years of experience in Python, FastAPI, and React.";
+                resumeInput.value = "John Doe: Senior Software Engineer with 6 years of expertise in cloud architecture, Python, and full-stack development.";
             }
         });
 
         function saveResumeContext() {
             const text = resumeInput.value.trim();
             localStorage.setItem('universal_agent_context', text);
-            alert("Agent knowledge base updated successfully!");
+            alert("Knowledge base updated successfully!");
+        }
+
+        function extractAgentName() {
+            const text = resumeInput.value.trim();
+            if (!text) return "Professional";
+            const firstLine = text.split('\\n')[0].trim();
+            const nameCandidate = firstLine.split(/[:,-]/)[0].trim();
+            if (nameCandidate && nameCandidate.length < 25 && !nameCandidate.toLowerCase().includes('resume')) {
+                return nameCandidate;
+            }
+            return "Professional";
         }
 
         async function handleFileUpload(event) {
@@ -168,7 +180,7 @@ def read_root():
 
         function loadVoices() {
             const voices = window.speechSynthesis.getVoices();
-            selectedVoice = voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('male')) 
+            selectedVoice = voices.find(v => v.lang.startsWith('en') && (v.name.toLowerCase().includes('natural') || v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('premium'))) 
                        || voices.find(v => v.lang.startsWith('en')) 
                        || voices[0];
         }
@@ -189,6 +201,7 @@ def read_root():
 
             recognition.onresult = (event) => {
                 lastTranscript = event.results[0][0].transcript.toLowerCase().trim();
+                // BARGE-IN: If user speaks while agent is talking or ready, immediately cancel speech
                 if (window.speechSynthesis.speaking) {
                     window.speechSynthesis.cancel();
                 }
@@ -209,29 +222,33 @@ def read_root():
         function toggleAgent() {
             if (!isRunning) {
                 isRunning = true;
-                actionBtn.innerHTML = `<i class="fa-solid fa-stop"></i> Stop Agent`;
+                actionBtn.innerHTML = `<i class="fa-solid fa-stop"></i> Stop Associate`;
                 playGreeting();
             } else {
                 stopAgent();
             }
         }
 
+        // BARGE-IN INTERACTION: Clicking orb anytime stops current speech and starts listening
         function handleOrbClick() {
             if (!isRunning) {
                 toggleAgent();
-            } else if (lastTranscript.length > 0) {
-                const query = lastTranscript;
-                lastTranscript = "";
-                window.speechSynthesis.cancel();
-                generateSmartAnswer(query);
             } else {
+                // Instantly interrupt speaking
+                if (window.speechSynthesis.speaking) {
+                    window.speechSynthesis.cancel();
+                }
                 try { recognition.stop(); } catch(e){}
-                setTimeout(() => { recognition.start(); }, 200);
+                setUIState('listening', 'Listening...');
+                setTimeout(() => {
+                    try { recognition.start(); } catch(e){}
+                }, 150);
             }
         }
 
         function playGreeting() {
-            const greeting = "Hello, I am ready. Ask me anything.";
+            const name = extractAgentName();
+            const greeting = `Hello, I am ${name}'s AI agent, how can I help you today?`;
             setUIState('speaking', greeting);
             speakAsAgent(greeting, () => { startListeningSafely(); });
         }
@@ -245,7 +262,7 @@ def read_root():
         }
 
         async function generateSmartAnswer(query) {
-            setUIState('thinking', `Thinking about: "${query}"...`);
+            setUIState('thinking', `Processing inquiry...`);
             const currentResumeContext = resumeInput.value.trim();
             
             try {
@@ -258,14 +275,14 @@ def read_root():
                 if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
                 const data = await response.json();
-                const reply = data.reply || "I couldn't generate a proper response.";
+                const reply = data.reply || "I apologize, could you please repeat that?";
 
                 setUIState('speaking', reply);
                 speakAsAgent(reply, () => { startListeningSafely(); });
 
             } catch (err) {
                 console.error(err);
-                const errorReply = "Sorry, connection issue.";
+                const errorReply = "I apologize, I am experiencing a temporary connection delay.";
                 setUIState('speaking', errorReply);
                 speakAsAgent(errorReply, () => { stopAgent(); });
             }
@@ -275,8 +292,8 @@ def read_root():
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             if (selectedVoice) utterance.voice = selectedVoice;
-            utterance.rate = 1.0;
-            utterance.pitch = 0.95;
+            utterance.rate = 1.05;
+            utterance.pitch = 1.0;
             utterance.onend = () => { if (callback) callback(); };
             window.speechSynthesis.speak(utterance);
         }
@@ -286,23 +303,23 @@ def read_root():
             if (state === 'listening') {
                 voiceOrb.classList.add('orb-active');
                 orbRipple.classList.remove('hidden');
-                orbIcon.className = "fa-solid fa-microphone-lines text-yellow-400 text-2xl animate-pulse";
-                statusBox.innerHTML = `<span class="text-emerald-400 font-bold animate-pulse">Listening...</span><span class="text-slate-300 mt-1">${message}</span>`;
+                orbIcon.className = "fa-solid fa-microphone-lines text-blue-400 text-3xl animate-pulse";
+                statusBox.innerHTML = `<span class="text-blue-400 font-bold animate-pulse">Listening...</span><span class="text-slate-400 mt-1">${message}</span>`;
             } else if (state === 'speaking') {
                 voiceOrb.classList.add('orb-active');
                 orbRipple.classList.remove('hidden');
-                orbIcon.className = "fa-solid fa-volume-high text-yellow-400 text-2xl animate-bounce";
-                statusBox.innerHTML = `<span class="text-yellow-400 font-bold">Speaking:</span><span class="text-slate-300 mt-1">${message}</span>`;
+                orbIcon.className = "fa-solid fa-volume-high text-blue-400 text-3xl animate-bounce";
+                statusBox.innerHTML = `<span class="text-blue-400 font-bold">Associate Speaking (Tap orb to interrupt):</span><span class="text-slate-300 mt-1">${message}</span>`;
             } else if (state === 'thinking') {
                 voiceOrb.classList.remove('orb-active');
                 orbRipple.classList.add('hidden');
-                orbIcon.className = "fa-solid fa-brain text-yellow-400 text-2xl animate-spin";
-                statusBox.innerHTML = `<span class="text-blue-400 font-bold">Processing...</span><span class="text-slate-300 mt-1">${message}</span>`;
+                orbIcon.className = "fa-solid fa-headset text-blue-400 text-3xl animate-spin";
+                statusBox.innerHTML = `<span class="text-amber-400 font-bold">Processing...</span><span class="text-slate-400 mt-1">${message}</span>`;
             } else {
                 voiceOrb.classList.remove('orb-active');
                 orbRipple.classList.add('hidden');
-                orbIcon.className = "fa-solid fa-microphone text-yellow-400 text-2xl";
-                statusBox.innerHTML = `<span class="text-yellow-400 font-bold">Ready</span><span class="text-slate-300 mt-1">Tap the orb to start.</span>`;
+                orbIcon.className = "fa-solid fa-microphone text-blue-400 text-3xl";
+                statusBox.innerHTML = `<span class="text-blue-400 font-bold">Ready</span><span class="text-slate-400">Tap the orb to start.</span>`;
             }
         }
 
@@ -310,7 +327,7 @@ def read_root():
             isRunning = false;
             window.speechSynthesis.cancel();
             if (recognition) { try { recognition.stop(); } catch(e){} }
-            actionBtn.innerHTML = `<i class="fa-solid fa-play"></i> Start Agent`;
+            actionBtn.innerHTML = `<i class="fa-solid fa-play"></i> Start Associate`;
             setUIState('idle', 'Ready.');
         }
     </script>
@@ -320,17 +337,21 @@ def read_root():
 
 @app.post("/api/agent-chat")
 def agent_chat(data: AgentChatRequest):
-    context = data.resume_context.strip() if data.resume_context.strip() else "No specific background provided."
+    context = data.resume_context.strip() if data.resume_context.strip() else "Professional background."
+    
+    # Extract name for system prompt context if possible
+    first_line = context.split("\n")[0] if context else ""
     
     system_prompt = (
-        "You are a professional AI voice assistant representing the individual described in the profile below. "
-        "Answer questions naturally, professionally, and concisely (under 2 sentences) as if speaking out loud.\n\n"
+        "You are a polite, professional, and articulate customer support and career associate representing the individual in the profile below. "
+        "Adopt a warm call-center professional tone. "
+        "Answer questions naturally, professionally, and extremely concisely (strictly 1 short sentence) so speech is instant.\n\n"
         f"--- PROFILE / RESUME DATA ---\n{context}\n-----------------------------"
     )
     
     try:
         response = client.chat.completions.create(
-            model="gemini-3.8-flash",  # Correct current Gemini model identifier
+            model="gemini-1.5-flash",  # Ultra-fast production flash model
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": data.message}
